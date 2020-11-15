@@ -19,6 +19,8 @@ namespace WebApi
             services.AddSwaggerGen();
 
             services.AddAutoMapper(typeof(MemberProfile).Assembly);
+            services.AddAutoMapper(typeof(TaskProfile).Assembly);
+
 
             services.AddMvc().AddFluentValidation(fv =>
                 fv.RegisterValidatorsFromAssemblyContaining<Startup>());

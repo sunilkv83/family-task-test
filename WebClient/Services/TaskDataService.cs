@@ -1,6 +1,13 @@
-﻿using System;
+﻿using Core.Extensions.ModelConversion;
+using Domain.Commands;
+using Domain.Queries;
+using Domain.ViewModel;
+using Microsoft.AspNetCore.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using WebClient.Abstractions;
 using WebClient.Shared.Models;
 
@@ -8,20 +15,32 @@ namespace WebClient.Services
 {
     public class TaskDataService: ITaskDataService
     {
-        public TaskDataService()
+        private readonly HttpClient httpClient;
+
+        public TaskDataService(IHttpClientFactory clientFactory)
         {
-            Tasks = new List<TaskModel>();
+            httpClient = clientFactory.CreateClient("FamilyTaskAPI");
+            Tasks = new List<TaskVm>();
         }
 
+        private IEnumerable<TaskVm> tasks;
+        public List<TaskVm> Tasks { get; set; }
 
-
-
-        public List<TaskModel> Tasks { get; private set; }
-        public TaskModel SelectedTask { get; private set; }
-
+        public TaskVm SelectedTask { get; private set; }
 
         public event EventHandler TasksUpdated;
         public event EventHandler TaskSelected;
+
+        private async Task<CreateTaskCommandResult> Create(CreateTaskCommand command)
+        {
+            return await httpClient.PostJsonAsync<CreateTaskCommandResult>("task", command);
+        }
+
+        private async Task<GetAllTaskQueryResult> GetAllTasks()
+        {
+            return await httpClient.GetJsonAsync<GetAllTaskQueryResult>("task");
+        }
+
 
         public void SelectTask(Guid id)
         {
@@ -42,10 +61,23 @@ namespace WebClient.Services
             TasksUpdated?.Invoke(this, null);
         }
 
-        public void AddTask(TaskModel model)
+        public async void AddTask(TaskVm model)
         {
-            Tasks.Add(model);
-            TasksUpdated?.Invoke(this, null);
+            //Tasks.Add(model);
+            //TasksUpdated?.Invoke(this, null);
+
+            var result = await Create(model.ToCreateTaskCommand());
+            if (result != null)
+            {
+                var updatedList = (await GetAllTasks()).Payload;
+
+                if (updatedList != null)
+                {
+                    tasks = updatedList;
+                    TasksUpdated?.Invoke(this, null);
+                    return;
+                }
+            }
         }
     }
 }

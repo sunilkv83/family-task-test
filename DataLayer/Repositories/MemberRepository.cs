@@ -11,7 +11,6 @@ namespace DataLayer
         public MemberRepository(FamilyTaskContext context) : base(context)
         { }
 
-       
 
         IMemberRepository IBaseRepository<Guid, Member, IMemberRepository>.NoTrack()
         {
