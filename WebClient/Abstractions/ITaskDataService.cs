@@ -14,7 +14,7 @@ namespace WebClient.Abstractions
     /// </summary>
     public interface ITaskDataService
     {
-        List<TaskVm> Tasks { get; }
+        IEnumerable<TaskVm> Tasks { get; }
         TaskVm SelectedTask { get; }
 
         event EventHandler TasksUpdated;
@@ -23,5 +23,8 @@ namespace WebClient.Abstractions
         void SelectTask(Guid id);
         void ToggleTask(Guid id);
         void AddTask(TaskVm model);
+
+        void LoadTasks();
+        void InvokeAllTasks();
     }
 }

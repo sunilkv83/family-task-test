@@ -43,7 +43,7 @@ namespace Services
 
             var tasks = await _taskRepository.Reset().ToListAsync();
 
-            if (tasks != null) //TODO: Any() not finding
+            if (tasks != null )//&& tasks.Any())
                 vm = _mapper.Map<IEnumerable<TaskVm>>(tasks);
 
             return new GetAllTaskQueryResult()

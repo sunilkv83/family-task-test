@@ -17,6 +17,7 @@ namespace WebClient.Abstractions
         event EventHandler SelectedMemberChanged;
         event EventHandler<string> UpdateMemberFailed;
         event EventHandler<string> CreateMemberFailed;
+        bool FromManageTasks { get; set; }
 
 
         Task UpdateMember(MemberVm model);

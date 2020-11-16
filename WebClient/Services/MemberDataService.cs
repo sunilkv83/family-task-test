@@ -22,6 +22,8 @@ namespace WebClient.Services
             httpClient = clientFactory.CreateClient("FamilyTaskAPI");
             members = new List<MemberVm>();
             LoadMembers();
+
+            FromManageTasks = false;
         }
         private IEnumerable<MemberVm> members;
 
@@ -33,7 +35,7 @@ namespace WebClient.Services
         public event EventHandler<string> UpdateMemberFailed;
         public event EventHandler<string> CreateMemberFailed;
         public event EventHandler SelectedMemberChanged;
-
+        public bool FromManageTasks { get; set; }
         private async void LoadMembers()
         {
             members = (await GetAllMembers()).Payload;

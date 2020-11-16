@@ -20,11 +20,12 @@ namespace WebClient.Services
         public TaskDataService(IHttpClientFactory clientFactory)
         {
             httpClient = clientFactory.CreateClient("FamilyTaskAPI");
-            Tasks = new List<TaskVm>();
+            tasks = new List<TaskVm>();
+            LoadTasks();
         }
 
         private IEnumerable<TaskVm> tasks;
-        public List<TaskVm> Tasks { get; set; }
+        public IEnumerable<TaskVm> Tasks => tasks;
 
         public TaskVm SelectedTask { get; private set; }
 
@@ -41,6 +42,15 @@ namespace WebClient.Services
             return await httpClient.GetJsonAsync<GetAllTaskQueryResult>("task");
         }
 
+        public async void LoadTasks()
+        {
+            tasks = (await GetAllTasks()).Payload;
+        }
+
+        public void InvokeAllTasks()
+        {
+            TaskSelected?.Invoke(this, null);
+        }
 
         public void SelectTask(Guid id)
         {
@@ -54,7 +64,7 @@ namespace WebClient.Services
             {
                 if (taskModel.Id == id)
                 {
-                    taskModel.IsDone = !taskModel.IsDone;
+                    taskModel.IsComplete = !taskModel.IsComplete;
                 }
             }
 
@@ -63,9 +73,6 @@ namespace WebClient.Services
 
         public async void AddTask(TaskVm model)
         {
-            //Tasks.Add(model);
-            //TasksUpdated?.Invoke(this, null);
-
             var result = await Create(model.ToCreateTaskCommand());
             if (result != null)
             {

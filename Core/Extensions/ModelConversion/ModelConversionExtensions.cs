@@ -55,8 +55,8 @@ namespace Core.Extensions.ModelConversion
             var command = new CreateTaskCommand()
             {
                 AssignedToId = model.Member,
-                IsComplete = model.IsDone,
-                Subject = model.Text,
+                IsComplete = model.IsComplete,
+                Subject = model.Subject,
             };
             return command;
         }
